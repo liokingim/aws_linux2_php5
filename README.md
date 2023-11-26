@@ -202,3 +202,8 @@ app\Config\bootstrap.php
 CakePlugin::load('DebugKit');
 
 
+   # vi /var/www/html/cakephp/app/Controller/AppController.php
+
+      class AppController extends Controller {
+         public $components = array('DebugKit.Toolbar');　　※ここ
+      }

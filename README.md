@@ -17,8 +17,26 @@ ps aux |grep httpd
 아파치 상태 확인
 systemctl status httpd
 
+● httpd.service - The Apache HTTP Server
+   Loaded: loaded (/usr/lib/systemd/system/httpd.service; enabled; vendor preset: disabled)
+   Active: active (running) since Mon 2023-11-27 03:42:47 UTC; 2h 5min ago
+     Docs: man:httpd.service(8)
+ Main PID: 6978 (httpd)
+   Status: "Total requests: 7; Idle/Busy workers 100/0;Requests/sec: 0.000929; Bytes served/sec:   9 B/sec"
+   CGroup: /system.slice/httpd.service
+           ├─6978 /usr/sbin/httpd -DFOREGROUND
+           ├─6980 /usr/sbin/httpd -DFOREGROUND
+           ├─6981 /usr/sbin/httpd -DFOREGROUND
+           ├─6982 /usr/sbin/httpd -DFOREGROUND
+           ├─6983 /usr/sbin/httpd -DFOREGROUND
+           ├─6984 /usr/sbin/httpd -DFOREGROUND
+           └─7026 /usr/sbin/httpd -DFOREGROUND
+
+
 php 설치에 필요한 모듈 설치
 sudo yum install -y gcc make libxml2-devel openssl-devel bzip2-devel libcurl-devel libjpeg-devel libpng-devel libicu-devel libmcrypt-devel libxslt-devel httpd-devel
+
+sudo yum -y install gcc-c++ libxml2-devel openssl-devel bzip2-devel libcurl-devel curl-devel libpng-devel libjpeg-devel freetype-devel t1lib-devel gmp-devel  libicu-devel openldap-devel libmcrypt-devel mysql-devel readline-devel net-snmp-devel  libxslt-devel libXpm-devel libmcrypt-devel libevent libevent-devel
 
 php 5.5 최신 버전 다운로드
 wget https://www.php.net/distributions/php-5.5.38.tar.gz
@@ -30,7 +48,42 @@ cd php-5.5.38
 
 ./configure --with-apxs2 --with-mysql --with-mysqli --with-pdo-mysql --with-bz2 --with-curl --with-gd --with-jpeg-dir=/usr --with-png-dir=/usr --with-openssl --with-zlib --with-gettext --enable-mbstring --enable-fpm --enable-pcntl --enable-opcache --enable-soap --enable-sockets --enable-zip
 
+## 추가 설정
+./configure --enable-sigchild --with-openssl=shared --with-kerberos --with-zlib=shared --enable-bcmath=shared --with-bz2=shared --with-curl=shared --enable-exif=shared --enable-ftp=shared --with-gd=shared --enable-gd-native-ttf --enable-gd-jis-conv --with-gettext=shared --with-gmp=shared --with-mhash=shared--enable-intl --with-ldap=shared --enable-mbstring=shared --with-onig --with-mcrypt=shared --with-mysql=shared,/usr --enable-pcntl --with-pdo-mysql=shared --with-mysqli=shared --with-readline=shared --enable-shmop=shared --with-snmp=shared --enable-soap=shared --enable-sockets=shared --enable-sysvmsg --enable-sysvsem --enable-sysvshm --enable-wddx=shared --with-xsl=shared --enable-zip=shared --enable-zend-signals --with-zlib-dir --with-freetype-dir=share --with-t1lib=share --with-xpm-dir=shared --with-libdir=lib64 --enable-fpm --with-tsrm-pthreads --enable-maintainer-zts
+
 make && sudo make install
+
+
+[ec2-user@amazonlinux php-5.5.38]$ sudo make install
+Installing shared extensions:     /usr/local/lib/php/extensions/no-debug-zts-20121212/
+Installing PHP CLI binary:        /usr/local/bin/
+Installing PHP CLI man page:      /usr/local/php/man/man1/
+Installing PHP FPM binary:        /usr/local/sbin/
+Installing PHP FPM config:        /usr/local/etc/
+Installing PHP FPM man page:      /usr/local/php/man/man8/
+Installing PHP FPM status page:      /usr/local/php/php/fpm/
+Installing PHP CGI binary:        /usr/local/bin/
+Installing PHP CGI man page:      /usr/local/php/man/man1/
+Installing build environment:     /usr/local/lib/php/build/
+Installing header files:          /usr/local/include/php/
+Installing helper programs:       /usr/local/bin/
+  program: phpize
+  program: php-config
+Installing man pages:             /usr/local/php/man/man1/
+  page: phpize.1
+  page: php-config.1
+Installing PEAR environment:      /usr/local/lib/php/
+[PEAR] Archive_Tar    - already installed: 1.4.0
+[PEAR] Console_Getopt - already installed: 1.4.1
+[PEAR] Structures_Graph- already installed: 1.1.1
+[PEAR] XML_Util       - already installed: 1.3.0
+[PEAR] PEAR           - already installed: 1.10.1
+Wrote PEAR system config file at: /usr/local/etc/pear.conf
+You may want to add: /usr/local/lib/php to your php.ini include_path
+/home/ec2-user/php-5.5.38/build/shtool install -c ext/phar/phar.phar /usr/local/bin
+ln -s -f phar.phar /usr/local/bin/phar
+Installing PDO headers:          /usr/local/include/php/ext/pdo/
+
 
 ### php.ini 설정 수정
 sudo cp php.ini-development /usr/local/lib/php.ini

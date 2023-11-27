@@ -32,21 +32,23 @@ cd php-5.5.38
 
 make && sudo make install
 
+### php.ini 설정 수정
 sudo cp php.ini-development /usr/local/lib/php.ini
 sudo vi /usr/local/lib/php.ini
-
+-------------------------------
 date.timezone = "Asia/Tokyo"
 
 ;extension=mysqli.so
 ;extension=pdo_mysql.so
+--------------------------
 
 sudo cp sapi/fpm/php-fpm.conf /usr/local/etc/
 sudo cp sapi/fpm/php-fpm.service /usr/lib/systemd/system/
 sudo systemctl enable php-fpm
 sudo systemctl start php-fpm
 
+### httpd.conf 설정 수정
 sudo vi /etc/httpd/conf/httpd.conf
-
 ----------------
 
 <IfModule dir_module>

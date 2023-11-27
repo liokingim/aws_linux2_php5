@@ -15,8 +15,8 @@ sudo vi /usr/local/lib/php.ini
 
 date.timezone = "Asia/Tokyo"
 
-extension=mysqli.so
-extension=pdo_mysql.so
+;extension=mysqli.so
+;extension=pdo_mysql.so
 
 sudo cp sapi/fpm/php-fpm.conf /usr/local/etc/
 sudo cp sapi/fpm/php-fpm.service /usr/lib/systemd/system/
@@ -25,6 +25,8 @@ sudo systemctl start php-fpm
 
 sudo vi /etc/httpd/conf/httpd.conf
 
+----------------
+
 <IfModule dir_module>
     DirectoryIndex index.html index.php index.php3
 </IfModule>
@@ -32,21 +34,63 @@ sudo vi /etc/httpd/conf/httpd.conf
 
 LoadModule php5_module        modules/libphp5.so
 
-AddType application/x-httpd-php .php .html .html .inc
-
-<Directory />
-    AllowOverride none
-    Require all denied
-</Directory>
 
 変更後
 <Directory />
-    Options FollowSymLinks
+    Options -Indexes +FollowSymLinks
     AllowOverride All
     Require all granted
 </Directory>
 
+
+<Directory "/var/www/html">
+    Options -Indexes +FollowSymLinks
+
+    AllowOverride None
+
+    Require all granted
+</Directory>
+
+
+<Directory "/var/www/cgi-bin">
+    AllowOverride None
+    Options -Indexes +FollowSymLinks
+    Require all granted
+</Directory>
+
+<IfModule mime_module>
+
+
+    AddHandler type-map var
+
+</IfModule>
+
+AddType application/x-httpd-php .php .html .html .inc
+
+Protocals h2c http/1.1
+ProtocalsHonorOrder On
+
+# to avoid proxy error 2022-12-20
+SetEnv force-proxy-request-1.0 1
+SetEnv proxy-nokeepalive 1
+----------------
+
 sudo systemctl restart httpd
+
+# 자동실행
+
+cd /etc/init.d/
+
+ls -la
+
+sudo systemctl status httpd
+sudo systemctl status mariadb
+
+// Apache
+sudo systemctl enable httpd
+// mariadb
+sudo systemctl enable mariadb
+
 
 # yum 업데이트가 안되는 경우
 
@@ -101,7 +145,7 @@ mysql -u root -p
 
 
 외부 아이피 허용
- use mysql
+use mysql
 
 유저 추가
 INSERT INTO user (Host, User) VALUES ('%', 'root');

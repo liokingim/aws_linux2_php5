@@ -1,3 +1,9 @@
+ssh　インストール
+sudo vi /etc/ssh/sshd_config
+
+■sshdの再起動
+$ sudo systemctl restart sshd
+
 아파치 설치확인
 
 httpd -v
@@ -36,7 +42,7 @@ systemctl status httpd
 php 설치에 필요한 모듈 설치
 sudo yum install -y gcc make libxml2-devel openssl-devel bzip2-devel libcurl-devel libjpeg-devel libpng-devel libicu-devel libmcrypt-devel libxslt-devel httpd-devel
 
-sudo yum -y install gcc-c++ libxml2-devel openssl-devel bzip2-devel libcurl-devel curl-devel libpng-devel libjpeg-devel freetype-devel t1lib-devel gmp-devel  libicu-devel openldap-devel libmcrypt-devel mysql-devel readline-devel net-snmp-devel  libxslt-devel libXpm-devel libmcrypt-devel libevent libevent-devel
+sudo yum -y install gcc-c++ libxml2-devel openssl-devel bzip2-devel libcurl-devel curl-devel libpng-devel libjpeg-devel freetype-devel t1lib-devel gmp-devel  libicu-devel openldap-devel libmcrypt-devel mysql-devel readline-devel net-snmp-devel  libxslt-devel libXpm-devel libevent libevent-devel httpd-devel
 
 php 5.5 최신 버전 다운로드
 wget https://www.php.net/distributions/php-5.5.38.tar.gz
@@ -46,10 +52,12 @@ tar -xzvf php-5.5.38.tar.gz
 
 cd php-5.5.38
 
+make clean
+
 ./configure --with-apxs2 --with-mysql --with-mysqli --with-pdo-mysql --with-bz2 --with-curl --with-gd --with-jpeg-dir=/usr --with-png-dir=/usr --with-openssl --with-zlib --with-gettext --enable-mbstring --enable-fpm --enable-pcntl --enable-opcache --enable-soap --enable-sockets --enable-zip
 
 ## 추가 설정
-./configure --enable-sigchild --with-openssl=shared --with-kerberos --with-zlib=shared --enable-bcmath=shared --with-bz2=shared --with-curl=shared --enable-exif=shared --enable-ftp=shared --with-gd=shared --enable-gd-native-ttf --enable-gd-jis-conv --with-gettext=shared --with-gmp=shared --with-mhash=shared--enable-intl --with-ldap=shared --enable-mbstring=shared --with-onig --with-mcrypt=shared --with-mysql=shared,/usr --enable-pcntl --with-pdo-mysql=shared --with-mysqli=shared --with-readline=shared --enable-shmop=shared --with-snmp=shared --enable-soap=shared --enable-sockets=shared --enable-sysvmsg --enable-sysvsem --enable-sysvshm --enable-wddx=shared --with-xsl=shared --enable-zip=shared --enable-zend-signals --with-zlib-dir --with-freetype-dir=share --with-t1lib=share --with-xpm-dir=shared --with-libdir=lib64 --enable-fpm --with-tsrm-pthreads --enable-maintainer-zts
+./configure --enable-sigchild --with-apxs2 --with-kerberos --with-openssl --with-zlib --enable-bcmath --with-bz2 --with-curl --enable-exif --enable-ftp --with-gd  --with-jpeg-dir=/usr --with-png-dir=/usr --enable-gd-native-ttf --enable-gd-jis-conv --with-gettext --with-gmp --with-mhash --enable-intl --with-ldap --enable-mbstring --with-onig --with-mcrypt --with-mysql --enable-pcntl --with-pdo-mysql --with-mysqli --with-readline --enable-shmop --with-snmp --enable-soap --enable-sockets --enable-sysvmsg --enable-sysvsem --enable-sysvshm --enable-wddx --with-xsl --enable-zip --enable-zend-signals --with-freetype-dir --with-t1lib --with-xpm-dir --with-libdir=lib64 --enable-fpm --with-tsrm-pthreads --enable-maintainer-zts
 
 make && sudo make install
 
@@ -109,7 +117,7 @@ sudo vi /etc/httpd/conf/httpd.conf
 </IfModule>
 
 
-LoadModule php5_module        modules/libphp5.so
+;LoadModule php5_module modules/libphp5.so
 
 
 変更後
@@ -143,6 +151,7 @@ LoadModule php5_module        modules/libphp5.so
 </IfModule>
 
 AddType application/x-httpd-php .php .html .html .inc
+AddType application/x-httpd-php-source .phps
 
 Protocals h2c http/1.1
 ProtocalsHonorOrder On
@@ -153,6 +162,10 @@ SetEnv proxy-nokeepalive 1
 ----------------
 
 sudo systemctl restart httpd
+
+cd /var/www/html
+
+echo "<?php phpinfo();" > test.php
 
 # 자동실행
 
@@ -274,6 +287,36 @@ sudo chmod -R 777 tmp
 cd ..
 
 sudo chmod -R 777 .
+
+# redis 설치
+sudo yum install autoconf
+
+sudo /usr/local/bin/phpize
+
+<!-- cd /home/ec2-user/php-5.5.38/ext/openssl
+
+cp config0.m4 config.m4 -->
+
+-------------------------------------
+Configuring for:
+PHP Api Version:         20121113
+Zend Module Api No:      20121212
+Zend Extension Api No:   220121212
+----------------------------------------
+
+sudo find / -name php-config
+
+./configure
+
+make && sudo make install
+
+sudo vi /usr/local/lib/php.ini
+
+extension=redis.so
+
+sudo systemctl restart httpd
+
+php -m
 
 ## vendors
 

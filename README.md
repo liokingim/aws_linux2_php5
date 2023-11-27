@@ -38,11 +38,18 @@ systemctl status httpd
            ├─6984 /usr/sbin/httpd -DFOREGROUND
            └─7026 /usr/sbin/httpd -DFOREGROUND
 
+sudo systemctl enable httpd.service
+
+sudo systemctl start httpd.service
+
+sudo systemctl stop httpd.service
+
+sudo ​systemctl restart httpd.service
 
 php 설치에 필요한 모듈 설치
 sudo yum install -y gcc make libxml2-devel openssl-devel bzip2-devel libcurl-devel libjpeg-devel libpng-devel libicu-devel libmcrypt-devel libxslt-devel httpd-devel
 
-sudo yum -y install gcc-c++ libxml2-devel openssl-devel bzip2-devel libcurl-devel curl-devel libpng-devel libjpeg-devel freetype-devel t1lib-devel gmp-devel  libicu-devel openldap-devel libmcrypt-devel mysql-devel readline-devel net-snmp-devel  libxslt-devel libXpm-devel libevent libevent-devel httpd-devel
+sudo yum -y install gcc-c++ libxml2-devel openssl-devel bzip2-devel libcurl-devel curl-devel libpng-devel libjpeg-devel freetype-devel t1lib-devel gmp-devel  libicu-devel openldap-devel libmcrypt-devel mysql-devel readline-devel net-snmp-devel libxslt-devel libXpm-devel libevent libevent-devel httpd-devel autoconf
 
 php 5.5 최신 버전 다운로드
 wget https://www.php.net/distributions/php-5.5.38.tar.gz
@@ -52,12 +59,14 @@ tar -xzvf php-5.5.38.tar.gz
 
 cd php-5.5.38
 
-make clean
+sudo make clean
 
 ./configure --with-apxs2 --with-mysql --with-mysqli --with-pdo-mysql --with-bz2 --with-curl --with-gd --with-jpeg-dir=/usr --with-png-dir=/usr --with-openssl --with-zlib --with-gettext --enable-mbstring --enable-fpm --enable-pcntl --enable-opcache --enable-soap --enable-sockets --enable-zip
 
+./configure --prefix=/usr/local/php --with-config-file-path=/etc --with-apxs2=/usr/local/apache/bin/apxs --with-mysql=/usr/local/mysql --with-mysqli=/usr/local/mysql/bin/mysql_config --with-curl --disable-debug --enable-safe-mode  --enable-sockets --enable-sysvsem=yes --enable-sysvshm=yes --enable-ftp --enable-magic-quotes --with-ttf --enable-gd-native-ttf --enable-inline-optimization --enable-bcmath --with-zlib --with-gd --with-gettext --with-jpeg-dir=/usr --with-png-dir=/usr/lib --with-freetype-dir=/usr --with-libxml-dir=/usr --enable-exif --enable-sigchild --enable-mbstring --with-openssl
+
 ## 추가 설정
-./configure --enable-sigchild --with-apxs2 --with-kerberos --with-openssl --with-zlib --enable-bcmath --with-bz2 --with-curl --enable-exif --enable-ftp --with-gd  --with-jpeg-dir=/usr --with-png-dir=/usr --enable-gd-native-ttf --enable-gd-jis-conv --with-gettext --with-gmp --with-mhash --enable-intl --with-ldap --enable-mbstring --with-onig --with-mcrypt --with-mysql --enable-pcntl --with-pdo-mysql --with-mysqli --with-readline --enable-shmop --with-snmp --enable-soap --enable-sockets --enable-sysvmsg --enable-sysvsem --enable-sysvshm --enable-wddx --with-xsl --enable-zip --enable-zend-signals --with-freetype-dir --with-t1lib --with-xpm-dir --with-libdir=lib64 --enable-fpm --with-tsrm-pthreads --enable-maintainer-zts
+./configure --prefix=/usr/local/lib/php --enable-sigchild --with-apxs2 --with-config-file-path=/etc/httpd/conf --with-kerberos --with-openssl --with-zlib --enable-bcmath --with-bz2 --with-curl --enable-exif --enable-ftp --enable-magic-quotes --with-gd  --with-jpeg-dir=/usr --with-png-dir=/usr --enable-gd-native-ttf --enable-gd-jis-conv --with-gettext --with-gmp --with-mhash --enable-intl --with-ldap --enable-mbstring --with-onig --with-mcrypt --with-mysql --enable-pcntl --with-pdo-mysql --with-mysqli --with-readline --enable-shmop --with-snmp --enable-opcache --enable-soap --enable-sockets --enable-sysvmsg --enable-sysvsem --enable-sysvshm --enable-wddx --with-xsl --enable-zip --enable-zend-signals --with-freetype-dir --with-t1lib --with-xpm-dir --with-libdir=lib64 --enable-fpm --with-tsrm-pthreads --enable-maintainer-zts
 
 make && sudo make install
 
@@ -94,8 +103,8 @@ Installing PDO headers:          /usr/local/include/php/ext/pdo/
 
 
 ### php.ini 설정 수정
-sudo cp php.ini-development /usr/local/lib/php.ini
-sudo vi /usr/local/lib/php.ini
+sudo cp php.ini-development /etc/httpd/conf/php.ini
+sudo vi /etc/httpd/conf/php.ini
 -------------------------------
 date.timezone = "Asia/Tokyo"
 
@@ -111,11 +120,6 @@ sudo systemctl start php-fpm
 ### httpd.conf 설정 수정
 sudo vi /etc/httpd/conf/httpd.conf
 ----------------
-
-<IfModule dir_module>
-    DirectoryIndex index.html index.php index.php3
-</IfModule>
-
 
 ;LoadModule php5_module modules/libphp5.so
 
@@ -137,6 +141,10 @@ sudo vi /etc/httpd/conf/httpd.conf
 </Directory>
 
 
+<IfModule dir_module>
+    DirectoryIndex index.html index.php index.php3
+</IfModule>
+
 <Directory "/var/www/cgi-bin">
     AllowOverride None
     Options -Indexes +FollowSymLinks
@@ -145,13 +153,13 @@ sudo vi /etc/httpd/conf/httpd.conf
 
 <IfModule mime_module>
 
+    AddType application/x-httpd-php .php .html .html .inc
+    AddType application/x-httpd-php-source .phps
 
     AddHandler type-map var
 
 </IfModule>
 
-AddType application/x-httpd-php .php .html .html .inc
-AddType application/x-httpd-php-source .phps
 
 Protocals h2c http/1.1
 ProtocalsHonorOrder On
@@ -163,9 +171,13 @@ SetEnv proxy-nokeepalive 1
 
 sudo systemctl restart httpd
 
+cd /var/www/
+
+sudo chown -R ec2-user:apache html
+
 cd /var/www/html
 
-echo "<?php phpinfo();" > test.php
+echo "<?php phpinfo();" > phpinfo.php
 
 # 자동실행
 
@@ -289,7 +301,11 @@ cd ..
 sudo chmod -R 777 .
 
 # redis 설치
-sudo yum install autoconf
+# sudo yum install autoconf
+
+wget https://codeload.github.com/phpredis/phpredis/zip/refs/tags/2.2.8
+
+cd phpredis-2.2.8
 
 sudo /usr/local/bin/phpize
 

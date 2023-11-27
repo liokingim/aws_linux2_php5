@@ -1,8 +1,30 @@
+아파치 설치확인
+
+httpd -v
+
+php 설치 확인
+php -v
+
+아파치 설치
+sudo yum install httpd
+
+아파치 서비스 시작
+sudo systemctl start httpd.service
+
+아파치 프로세스 확인
+ps aux |grep httpd
+
+아파치 상태 확인
+systemctl status httpd
+
+php 설치에 필요한 모듈 설치
+sudo yum install -y gcc make libxml2-devel openssl-devel bzip2-devel libcurl-devel libjpeg-devel libpng-devel libicu-devel libmcrypt-devel libxslt-devel httpd-devel
+
+php 5.5 최신 버전 다운로드
 wget https://www.php.net/distributions/php-5.5.38.tar.gz
 
+php 압축해제
 tar -xzvf php-5.5.38.tar.gz
-
-sudo yum install -y gcc make libxml2-devel openssl-devel bzip2-devel libcurl-devel libjpeg-devel libpng-devel libicu-devel libmcrypt-devel libxslt-devel httpd-devel
 
 cd php-5.5.38
 

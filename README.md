@@ -61,12 +61,14 @@ cd php-5.5.38
 
 sudo make clean
 
+./configure --help
+
 ./configure --with-apxs2 --with-mysql --with-mysqli --with-pdo-mysql --with-bz2 --with-curl --with-gd --with-jpeg-dir=/usr --with-png-dir=/usr --with-openssl --with-zlib --with-gettext --enable-mbstring --enable-fpm --enable-pcntl --enable-opcache --enable-soap --enable-sockets --enable-zip
 
 ./configure --prefix=/usr/local/php --with-config-file-path=/etc --with-apxs2=/usr/local/apache/bin/apxs --with-mysql=/usr/local/mysql --with-mysqli=/usr/local/mysql/bin/mysql_config --with-curl --disable-debug --enable-safe-mode  --enable-sockets --enable-sysvsem=yes --enable-sysvshm=yes --enable-ftp --enable-magic-quotes --with-ttf --enable-gd-native-ttf --enable-inline-optimization --enable-bcmath --with-zlib --with-gd --with-gettext --with-jpeg-dir=/usr --with-png-dir=/usr/lib --with-freetype-dir=/usr --with-libxml-dir=/usr --enable-exif --enable-sigchild --enable-mbstring --with-openssl
 
 ## 추가 설정
-./configure --prefix=/usr/local/lib/php --enable-sigchild --with-apxs2 --with-config-file-path=/etc/httpd/conf --with-kerberos --with-openssl --with-zlib --enable-bcmath --with-bz2 --with-curl --enable-exif --enable-ftp --enable-magic-quotes --with-gd  --with-jpeg-dir=/usr --with-png-dir=/usr --enable-gd-native-ttf --enable-gd-jis-conv --with-gettext --with-gmp --with-mhash --enable-intl --with-ldap --enable-mbstring --with-onig --with-mcrypt --with-mysql --enable-pcntl --with-pdo-mysql --with-mysqli --with-readline --enable-shmop --with-snmp --enable-opcache --enable-soap --enable-sockets --enable-sysvmsg --enable-sysvsem --enable-sysvshm --enable-wddx --with-xsl --enable-zip --enable-zend-signals --with-freetype-dir --with-t1lib --with-xpm-dir --with-libdir=lib64 --enable-fpm --with-tsrm-pthreads --enable-maintainer-zts
+./configure --enable-sigchild --with-apxs2 --with-config-file-path=/etc --with-config-file-scan-dir=/etc/php.d --with-kerberos --with-openssl=shared --with-zlib=shared --enable-bcmath=shared --with-bz2=shared --with-curl=shared --enable-dom=shared --enable-calendar=shared --enable-exif=shared --enable-fileinfo=shared --enable-ftp=shared --with-gd=shared --with-iconv=shared --with-jpeg-dir=/usr --with-png-dir=/usr --enable-gd-native-ttf --enable-gd-jis-conv --with-gettext=shared --with-gmp=shared --with-mhash --enable-intl=shared --with-ldap=shared --enable-mbstring=shared --with-onig --enable-json=shared --with-mcrypt=shared --with-mysql=shared --enable-pcntl --enable-pdo=shared --with-pdo-mysql=shared --enable-mysqlnd=shared --with-pdo-sqlite=shared  --enable-phar=shared --enable-posix=shared --with-mysqli=shared --with-readline --enable-shmop=shared --enable-simplexml=shared --enable-sockets=shared --with-sqlite3=shared --with-snmp --enable-opcache --enable-soap=shared --enable-sysvmsg=shared --enable-sysvsem=shared --enable-sysvshm=shared --enable-tokenizer=shared --enable-wddx=shared --with-xsl=shared --enable-zip=shared --enable-zend-signals --with-freetype-dir --with-t1lib --with-xpm-dir --enable-xml=shared --with-xmlrpc=shared --enable-xmlreader=shared --enable-xmlwriter=shared --with-libdir=lib64 --enable-fpm --with-tsrm-pthreads --enable-maintainer-zts
 
 make && sudo make install
 
@@ -301,6 +303,19 @@ cd ..
 sudo chmod -R 777 .
 
 # redis 설치
+
+sudo amazon-linux-extras install redis6
+
+sudo yum install redis -y
+
+sudo systemctl start redis
+
+sudo systemctl enable redis
+
+redis-server --version
+
+redis-cli --version
+
 # sudo yum install autoconf
 
 wget https://codeload.github.com/phpredis/phpredis/zip/refs/tags/2.2.8
@@ -333,6 +348,76 @@ extension=redis.so
 sudo systemctl restart httpd
 
 php -m
+
+# memcache 설치
+
+wget http://memcached.org/latest
+
+tar -zxvf  memcached-1.6.22.tar.gz
+cd  memcached-1.6.22
+./configure && make && make test && sudo make install
+
+---------------------------------------------
+sudo tee /etc/sysconfig/memcached <<EOF
+# These defaults will be used by every memcached instance, unless overridden
+# by values in /etc/sysconfig/memcached.<port>
+USER="nobody"
+MAXCONN="1024"
+CACHESIZE="64"
+OPTIONS=""
+
+# The PORT variable will only be used by memcached.service, not by
+# memcached@xxxxx services, which will use the xxxxx
+PORT="11211"
+EOF
+---------------------------------------------
+
+yum install php-pecl-memcache
+
+yum list | grep memcached
+amazon-linux-extras list | grep memcached
+
+amazon-linux-extras install -y memcached1.5
+yum list installed | grep memcached
+
+sudo service memcached start
+---------------------------------------------
+---------------------------------------------
+sudo yum install libmemcached libmemcached-devel
+
+https://github.com/php-memcached-dev/php-memcached/tree/2.2.0
+
+unzip php-memcached-2.2.0.zip
+
+cd php-memcached-2.2.0
+phpize
+./configure
+make && sudo make install
+
+
+
+cd  /usr/local/lib/php/extensions/no-debug-zts-20121212/
+
+sudo vi /etc/php.ini
+
+php --ini
+
+
+# igbinary 설치
+
+https://github.com/igbinary/igbinary/tree/2.0.8
+
+unzip igbinary-2.0.8.zip
+
+cd igbinary-2.0.8
+
+phpize
+
+./configure
+
+make && sudo make install
+
+igbinary.so
 
 ## vendors
 

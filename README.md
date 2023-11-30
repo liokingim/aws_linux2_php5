@@ -49,7 +49,7 @@ sudo ​systemctl restart httpd.service
 php 설치에 필요한 모듈 설치
 sudo yum install -y gcc make libxml2-devel openssl-devel bzip2-devel libcurl-devel libjpeg-devel libpng-devel libicu-devel libmcrypt-devel libxslt-devel httpd-devel
 
-sudo yum -y install gcc-c++ libxml2-devel openssl-devel bzip2-devel libcurl-devel curl-devel libpng-devel libjpeg-devel freetype-devel t1lib-devel gmp-devel  libicu-devel openldap-devel libmcrypt-devel mysql-devel readline-devel net-snmp-devel libxslt-devel libXpm-devel libevent libevent-devel httpd-devel autoconf
+sudo yum -y install gcc-c++ libxml2-devel openssl-devel bzip2-devel libcurl-devel curl-devel libpng-devel libjpeg-devel freetype-devel t1lib-devel gmp-devel  libicu-devel openldap-devel libmcrypt-devel mysql-devel readline-devel net-snmp-devel libxslt-devel libXpm-devel libevent libevent-devel httpd-devel autoconf libmemcached libmemcached-devel
 
 php 5.5 최신 버전 다운로드
 wget https://www.php.net/distributions/php-5.5.38.tar.gz
@@ -68,7 +68,7 @@ sudo make clean
 ./configure --prefix=/usr/local/php --with-config-file-path=/etc --with-apxs2=/usr/local/apache/bin/apxs --with-mysql=/usr/local/mysql --with-mysqli=/usr/local/mysql/bin/mysql_config --with-curl --disable-debug --enable-safe-mode  --enable-sockets --enable-sysvsem=yes --enable-sysvshm=yes --enable-ftp --enable-magic-quotes --with-ttf --enable-gd-native-ttf --enable-inline-optimization --enable-bcmath --with-zlib --with-gd --with-gettext --with-jpeg-dir=/usr --with-png-dir=/usr/lib --with-freetype-dir=/usr --with-libxml-dir=/usr --enable-exif --enable-sigchild --enable-mbstring --with-openssl
 
 ## 추가 설정
-./configure --enable-sigchild --with-apxs2 --with-config-file-path=/etc --with-config-file-scan-dir=/etc/php.d --with-extension-dir=/usr/lib64/php/modules --with-kerberos --with-openssl=shared --with-zlib=shared --enable-bcmath=shared --with-bz2=shared --with-curl=shared --enable-dom=shared --enable-calendar=shared --enable-exif=shared --enable-fileinfo=shared --enable-ftp=shared --with-gd=shared --with-iconv=shared --with-jpeg-dir=/usr --with-png-dir=/usr --enable-gd-native-ttf --enable-gd-jis-conv --with-gettext=shared --with-gmp=shared --with-mhash --enable-intl=shared --with-ldap=shared --enable-mbstring=shared --with-onig --enable-json=shared --with-mcrypt=shared --with-mysql=shared --enable-pcntl --enable-pdo=shared --with-pdo-mysql=shared --enable-mysqlnd=shared --with-pdo-sqlite=shared  --enable-phar=shared --enable-posix=shared --with-mysqli=shared --with-readline --enable-shmop=shared --enable-simplexml=shared --enable-sockets=shared --with-sqlite3=shared --with-snmp --enable-opcache --enable-soap=shared --enable-sysvmsg=shared --enable-sysvsem=shared --enable-sysvshm=shared --enable-tokenizer=shared --enable-wddx=shared --with-xsl=shared --enable-zip=shared --enable-zend-signals --with-freetype-dir --with-t1lib --with-xpm-dir --enable-xml=shared --with-xmlrpc=shared --enable-xmlreader=shared --enable-xmlwriter=shared --with-libdir=lib64 --enable-fpm --with-tsrm-pthreads --enable-maintainer-zts
+./configure --enable-sigchild --with-apxs2 --with-config-file-path=/etc --with-config-file-scan-dir=/etc/php.d --with-kerberos --with-openssl=shared --with-zlib=shared --enable-bcmath=shared --with-bz2=shared --with-curl=shared --enable-dom=shared --enable-calendar=shared --enable-exif=shared --enable-fileinfo=shared --enable-ftp=shared --with-gd=shared --with-iconv=shared --with-jpeg-dir=/usr --with-png-dir=/usr --enable-gd-native-ttf --enable-gd-jis-conv --with-gettext=shared --with-gmp=shared --with-mhash --enable-intl=shared --with-ldap=shared --enable-mbstring=shared --with-onig --enable-json=shared --with-mcrypt=shared --with-mysql=shared --enable-pcntl --enable-pdo=shared --with-pdo-mysql=shared --enable-mysqlnd=shared --with-pdo-sqlite=shared  --enable-phar=shared --enable-posix=shared --with-mysqli=shared --with-readline --enable-shmop=shared --enable-simplexml=shared --enable-sockets=shared --with-sqlite3=shared --with-snmp --enable-opcache --enable-soap=shared --enable-sysvmsg=shared --enable-sysvsem=shared --enable-sysvshm=shared --enable-tokenizer=shared --enable-wddx=shared --with-xsl=shared --enable-zip=shared --enable-zend-signals --with-freetype-dir --with-t1lib --with-xpm-dir --enable-xml=shared --with-xmlrpc=shared --enable-xmlreader=shared --enable-xmlwriter=shared --with-libdir=lib64 --enable-fpm --with-tsrm-pthreads --enable-maintainer-zts
 
 make && sudo make install
 
@@ -103,10 +103,16 @@ You may want to add: /usr/local/lib/php to your php.ini include_path
 ln -s -f phar.phar /usr/local/bin/phar
 Installing PDO headers:          /usr/local/include/php/ext/pdo/
 
+인스톨 확인
+ls -la /usr/local/lib/php/extensions/no-debug-zts-20121212/
+
+sudo mkdir /etc/php.d
+sudo mkdir /usr/lib64/php
+sudo mkdir /usr/lib64/php/modules
 
 ### php.ini 설정 수정
-sudo cp php.ini-development /etc/httpd/conf/php.ini
-sudo vi /etc/httpd/conf/php.ini
+sudo cp php.ini-development /etc/php.ini
+sudo vi /etc/php.ini
 -------------------------------
 date.timezone = "Asia/Tokyo"
 
@@ -119,7 +125,12 @@ extension_dir = "/usr/lib64/php/modules"
 sudo cp sapi/fpm/php-fpm.conf /usr/local/etc/
 sudo cp sapi/fpm/php-fpm.service /usr/lib/systemd/system/
 sudo systemctl enable php-fpm
+
+
 sudo systemctl start php-fpm
+
+### 모듈 복사
+sudo cp -pr /usr/local/lib/php/extensions/no-debug-zts-20121212/. /usr/lib64/php/modules/
 
 ### httpd.conf 설정 수정
 sudo vi /etc/httpd/conf/httpd.conf
@@ -127,6 +138,8 @@ sudo vi /etc/httpd/conf/httpd.conf
 
 ;LoadModule php5_module modules/libphp5.so
 
+임시로 유저 변경
+User ec2-user
 
 変更後
 <Directory />
@@ -322,9 +335,11 @@ redis-cli --version
 
 wget https://codeload.github.com/phpredis/phpredis/zip/refs/tags/2.2.8
 
+unzip phpredis-2.2.8.zip
+
 cd phpredis-2.2.8
 
-sudo /usr/local/bin/phpize
+phpize
 
 <!-- cd /home/ec2-user/php-5.5.38/ext/openssl
 
@@ -385,7 +400,7 @@ yum list installed | grep memcached
 sudo service memcached start
 ---------------------------------------------
 ---------------------------------------------
-sudo yum install libmemcached libmemcached-devel
+# php-memcached 설치
 
 https://github.com/php-memcached-dev/php-memcached/tree/2.2.0
 
@@ -398,7 +413,12 @@ make && sudo make install
 
 
 
-cd  /usr/local/lib/php/extensions/no-debug-zts-20121212/
+ls -la /usr/local/lib/php/extensions/no-debug-zts-20121212/
+
+memcached.so 확인
+
+### 모듈 복사
+sudo cp -pr /usr/local/lib/php/extensions/no-debug-zts-20121212/memcached.so /usr/lib64/php/modules/
 
 sudo vi /etc/php.ini
 
@@ -406,6 +426,8 @@ php --ini
 
 
 # igbinary 설치
+
+cd ..
 
 https://github.com/igbinary/igbinary/tree/2.0.8
 
@@ -419,7 +441,25 @@ phpize
 
 make && sudo make install
 
-igbinary.so
+ls -la /usr/local/lib/php/extensions/no-debug-zts-20121212/
+
+igbinary.so 확인
+
+sudo cp -pr /usr/local/lib/php/extensions/no-debug-zts-20121212/igbinary.so /usr/lib64/php/modules/
+
+ls -la /usr/lib64/php/modules/
+
+# php.d의 ini 파일 전부 복사
+
+cd php.d/
+
+sudo cp -pr *.* /etc/php.d/
+
+sudo systemctl restart httpd
+
+php -m
+
+php --ini
 
 ## vendors
 

@@ -1,3 +1,6 @@
+sudo yum update -y
+
+
 ssh　インストール
 sudo vi /etc/ssh/sshd_config
 
@@ -60,6 +63,7 @@ tar -xzvf php-5.5.38.tar.gz
 cd php-5.5.38
 
 sudo make clean
+make distclean
 
 ./configure --help
 
@@ -68,10 +72,64 @@ sudo make clean
 ./configure --prefix=/usr/local/php --with-config-file-path=/etc --with-apxs2=/usr/local/apache/bin/apxs --with-mysql=/usr/local/mysql --with-mysqli=/usr/local/mysql/bin/mysql_config --with-curl --disable-debug --enable-safe-mode  --enable-sockets --enable-sysvsem=yes --enable-sysvshm=yes --enable-ftp --enable-magic-quotes --with-ttf --enable-gd-native-ttf --enable-inline-optimization --enable-bcmath --with-zlib --with-gd --with-gettext --with-jpeg-dir=/usr --with-png-dir=/usr/lib --with-freetype-dir=/usr --with-libxml-dir=/usr --enable-exif --enable-sigchild --enable-mbstring --with-openssl
 
 ## 추가 설정
-./configure --enable-sigchild --with-apxs2 --with-config-file-path=/etc --with-config-file-scan-dir=/etc/php.d --with-kerberos --with-openssl=shared --with-zlib=shared --enable-bcmath=shared --with-bz2=shared --with-curl=shared --enable-dom=shared --enable-calendar=shared --enable-exif=shared --enable-fileinfo=shared --enable-ftp=shared --with-gd=shared --with-iconv=shared --with-jpeg-dir=/usr --with-png-dir=/usr --enable-gd-native-ttf --enable-gd-jis-conv --with-gettext=shared --with-gmp=shared --with-mhash --enable-intl=shared --with-ldap=shared --enable-mbstring=shared --with-onig --enable-json=shared --with-mcrypt=shared --with-mysql=shared --enable-pcntl --enable-pdo=shared --with-pdo-mysql=shared --enable-mysqlnd=shared --with-pdo-sqlite=shared  --enable-phar=shared --enable-posix=shared --with-mysqli=shared --with-readline --enable-shmop=shared --enable-simplexml=shared --enable-sockets=shared --with-sqlite3=shared --with-snmp --enable-opcache --enable-soap=shared --enable-sysvmsg=shared --enable-sysvsem=shared --enable-sysvshm=shared --enable-tokenizer=shared --enable-wddx=shared --with-xsl=shared --enable-zip=shared --enable-zend-signals --with-freetype-dir --with-t1lib --with-xpm-dir --enable-xml=shared --with-xmlrpc=shared --enable-xmlreader=shared --enable-xmlwriter=shared --with-libdir=lib64 --enable-fpm --with-tsrm-pthreads --enable-maintainer-zts
+make distclean
+
+-------------------------------------------------
+# ZTS 모듈 사용
+./configure --enable-sigchild --with-apxs2=/usr/bin/apxs --with-config-file-path=/etc --with-config-file-scan-dir=/etc/php.d --with-kerberos --with-openssl=shared --with-zlib=shared --enable-bcmath=shared --with-bz2=shared --with-curl=shared --enable-dom=shared --enable-calendar=shared --enable-exif=shared --enable-fileinfo=shared --enable-ftp=shared --with-gd=shared --with-iconv=shared --with-jpeg-dir=/usr --with-png-dir=/usr --enable-gd-native-ttf --enable-gd-jis-conv --with-gettext=shared --with-gmp=shared --with-mhash --enable-intl=shared --with-ldap=shared --enable-mbstring=shared --with-onig --enable-json=shared --with-mcrypt=shared --with-mysql=shared --enable-pcntl --enable-pdo=shared --with-pdo-mysql=shared --enable-mysqlnd=shared --with-pdo-sqlite=shared  --enable-phar=shared --enable-posix=shared --with-mysqli=shared --with-readline --enable-shmop=shared --enable-simplexml=shared --enable-sockets=shared --with-sqlite3=shared --with-snmp --enable-opcache --enable-soap=shared --enable-sysvmsg=shared --enable-sysvsem=shared --enable-sysvshm=shared --enable-tokenizer=shared --enable-wddx=shared --with-xsl=shared --enable-zip=shared --enable-zend-signals --with-freetype-dir --with-t1lib --with-xpm-dir --enable-xml=shared --with-xmlrpc=shared --enable-xmlreader=shared --enable-xmlwriter=shared --with-libdir=lib64 --enable-fpm --with-tsrm-pthreads --enable-maintainer-zts --prefix=/usr/local/php-zts
 
 make && sudo make install
 
+-rwxr-xr-x 1 root root 31717864 Nov 30 09:04 libphp5.so
+
+sudo mv /usr/lib64/httpd/modules/libphp5.so /usr/lib64/httpd/modules/libphp-zts-5.5.so
+
+-------------------------------------------------------
+# 비ZTS 모듈 사용
+make distclean
+
+./configure --enable-sigchild --with-apxs2=/usr/bin/apxs --with-config-file-path=/etc --with-config-file-scan-dir=/etc/php.d --with-kerberos --with-openssl=shared --with-zlib=shared --enable-bcmath=shared --with-bz2=shared --with-curl=shared --enable-dom=shared --enable-calendar=shared --enable-exif=shared --enable-fileinfo=shared --enable-ftp=shared --with-gd=shared --with-iconv=shared --with-jpeg-dir=/usr --with-png-dir=/usr --enable-gd-native-ttf --enable-gd-jis-conv --with-gettext=shared --with-gmp=shared --with-mhash --enable-intl=shared --with-ldap=shared --enable-mbstring=shared --with-onig --enable-json=shared --with-mcrypt=shared --with-mysql=shared --enable-pcntl --enable-pdo=shared --with-pdo-mysql=shared --enable-mysqlnd=shared --with-pdo-sqlite=shared  --enable-phar=shared --enable-posix=shared --with-mysqli=shared --with-readline --enable-shmop=shared --enable-simplexml=shared --enable-sockets=shared --with-sqlite3=shared --with-snmp --enable-opcache --enable-soap=shared --enable-sysvmsg=shared --enable-sysvsem=shared --enable-sysvshm=shared --enable-tokenizer=shared --enable-wddx=shared --with-xsl=shared --enable-zip=shared --enable-zend-signals --with-freetype-dir --with-t1lib --with-xpm-dir --enable-xml=shared --with-xmlrpc=shared --enable-xmlreader=shared --enable-xmlwriter=shared --with-libdir=lib64 --enable-fpm --with-tsrm-pthreads --prefix=/usr/local/php
+
+make && sudo make install
+
+-rwxr-xr-x 1 root root 30986704 Nov 30 09:11 libphp5.so
+
+sudo mv /usr/lib64/httpd/modules/libphp5.so /usr/lib64/httpd/modules/libphp-5.5.so
+
+sudo systemctl restart httpd
+
+------------------------------------------------------------
+
+./configure --with-config-file-scan-dir=/etc/php-zts-5.5.d
+
+------------------------------------------------------------
+http/conf.d/php.conf
+
+<FilesMatch \.php$>
+    SetHandler application/x-httpd-php
+</FilesMatch>
+
+AddType text/html .php
+
+DirectoryIndex index.php
+
+# session redis
+
+
+------------------------------------------------------------
+ 10-php.conf
+
+# 비ZTS 모듈 사용
+<IfModule prefork.c>
+    LoadModule php5_module /usr/lib64/httpd/modules/libphp-5.5.so
+</IfModule>
+
+# ZTS 모듈 사용
+<IfModule !prefork.c>
+    LoadModule php5_module /usr/lib64/httpd/modules/libphp-zts-5.5.so
+</IfModule>
+
+---------------------------------------------------------------
 
 [ec2-user@amazonlinux php-5.5.38]$ sudo make install
 Installing shared extensions:     /usr/local/lib/php/extensions/no-debug-zts-20121212/
@@ -118,8 +176,6 @@ date.timezone = "Asia/Tokyo"
 
 extension_dir = "/usr/lib64/php/modules"
 
-;extension=mysqli.so
-;extension=pdo_mysql.so
 --------------------------
 
 sudo cp sapi/fpm/php-fpm.conf /usr/local/etc/
@@ -358,9 +414,13 @@ sudo find / -name php-config
 
 make && sudo make install
 
-sudo vi /usr/local/lib/php.ini
+// sudo vi /usr/local/lib/php.ini
 
-extension=redis.so
+// extension=redis.so
+
+ls -la /usr/local/lib/php/extensions/no-debug-zts-20121212/
+
+redis.so 확인
 
 sudo systemctl restart httpd
 

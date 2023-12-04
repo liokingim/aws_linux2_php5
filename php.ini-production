@@ -83,7 +83,7 @@
 ; development version only in development environments as errors shown to
 ; application users can inadvertently leak otherwise secure information.
 
-; This is php.ini-development INI file.
+; This is php.ini-production INI file.
 
 ;;;;;;;;;;;;;;;;;;;
 ; Quick Reference ;
@@ -446,7 +446,7 @@ memory_limit = 128M
 ; Development Value: E_ALL
 ; Production Value: E_ALL & ~E_DEPRECATED & ~E_STRICT
 ; http://php.net/error-reporting
-error_reporting = E_ALL
+error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT
 
 ; This directive controls whether or not and where PHP will output errors,
 ; notices and warnings too. Error output is very useful during development, but
@@ -463,7 +463,7 @@ error_reporting = E_ALL
 ; Development Value: On
 ; Production Value: Off
 ; http://php.net/display-errors
-display_errors = On
+display_errors = Off
 
 ; The display of errors which occur during PHP's startup sequence are handled
 ; separately from display_errors. PHP's default behavior is to suppress those
@@ -474,7 +474,7 @@ display_errors = On
 ; Development Value: On
 ; Production Value: Off
 ; http://php.net/display-startup-errors
-display_startup_errors = On
+display_startup_errors = Off
 
 ; Besides displaying errors, PHP can also log errors to locations such as a
 ; server-specific log, STDERR, or a location specified by the error_log
@@ -518,7 +518,7 @@ report_memleaks = On
 ; Development Value: On
 ; Production Value: Off
 ; http://php.net/track-errors
-track_errors = On
+track_errors = Off
 
 ; Turn off normal error reporting and emit XML-RPC error XML
 ; http://php.net/xmlrpc-errors
@@ -692,8 +692,6 @@ default_mimetype = "text/html"
 ; UNIX: "/path1:/path2"
 ;include_path = ".:/php/includes"
 ;
-include_path = ".:/etc/php-5.5.d"
-
 ; Windows: "\path1;\path2"
 ;include_path = ".;c:\php\includes"
 ;
@@ -718,7 +716,6 @@ user_dir =
 ; extension_dir = "./"
 ; On windows:
 ; extension_dir = "ext"
-
 
 ; Directory where the temporary files should be placed.
 ; Defaults to the system default (see sys_get_temp_dir)
@@ -887,8 +884,8 @@ default_socket_timeout = 60
 ;extension=php_pspell.dll
 ;extension=php_shmop.dll
 
-; The MIBS data available in the PHP distribution must be installed.
-; See http://www.php.net/manual/en/snmp.installation.php
+; The MIBS data available in the PHP distribution must be installed. 
+; See http://www.php.net/manual/en/snmp.installation.php 
 ;extension=php_snmp.dll
 
 ;extension=php_soap.dll
@@ -910,7 +907,7 @@ cli_server.color = On
 [Date]
 ; Defines the default timezone used by the date functions
 ; http://php.net/date.timezone
-date.timezone = "Asia/Tokyo"
+;date.timezone =
 
 ; http://php.net/date.default-latitude
 ;date.default_latitude = 31.7667
@@ -1215,7 +1212,7 @@ mysqlnd.collect_statistics = On
 ; Enable / Disable collection of memory usage statistics by mysqlnd which can be
 ; used to tune and monitor MySQL operations.
 ; http://php.net/mysqlnd.collect_memory_statistics
-mysqlnd.collect_memory_statistics = On
+mysqlnd.collect_memory_statistics = Off
 
 ; Size of a pre-allocated buffer used when sending commands to MySQL in bytes.
 ; http://php.net/mysqlnd.net_cmd_buffer_size

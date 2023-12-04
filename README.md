@@ -49,10 +49,47 @@ sudo systemctl stop httpd.service
 
 sudo ​systemctl restart httpd.service
 
-php 설치에 필요한 모듈 설치
-sudo yum install -y gcc make libxml2-devel openssl-devel bzip2-devel libcurl-devel libjpeg-devel libpng-devel libicu-devel libmcrypt-devel libxslt-devel httpd-devel
+apachectl -V | grep MPM
 
+php 설치에 필요한 모듈 설치
+--------------------------------------------------
 sudo yum -y install gcc-c++ libxml2-devel openssl-devel bzip2-devel libcurl-devel curl-devel libpng-devel libjpeg-devel freetype-devel t1lib-devel gmp-devel  libicu-devel openldap-devel libmcrypt-devel mysql-devel readline-devel net-snmp-devel libxslt-devel libXpm-devel libevent libevent-devel httpd-devel autoconf libmemcached libmemcached-devel
+
+httpd.conf 복사
+sudo mv /etc/httpd/conf/httpd.conf /etc/httpd/conf/httpd.conf.bak
+sudo cp -pr httpd.conf /etc/httpd/conf/httpd.conf
+sudo chown root:root /etc/httpd/conf/httpd.conf
+sudo chmod 644 /etc/httpd/conf/httpd.conf
+
+10-php.conf 복사
+sudo cp -pr 10-php.conf /etc/httpd/conf.modules.d/.
+sudo chown root:root /etc/httpd/conf.modules.d/10-php.conf
+sudo chmod 644 /etc/httpd/conf.modules.d/10-php.conf
+
+php-conf.5.5 복사
+sudo cp -pr php-conf.5.5 /etc/httpd/conf.d/.
+sudo chown root:root /etc/httpd/conf.d/php-conf.5.5
+sudo chmod 644 /etc/httpd/conf.d/php-conf.5.5
+
+php-conf.5.5 심볼릭링크
+sudo ln -s /etc/httpd/conf.d/php-conf.5.5 /etc/alternatives/php.conf
+sudo ln -s /etc/alternatives/php.conf /etc/httpd/conf.d/php.conf
+
+필요한 디렉토리 작성
+sudo mkdir /etc/php-zts-5.5.d
+sudo mkdir /etc/php-5.5.d
+
+sudo mkdir /usr/lib64/php
+sudo mkdir /usr/lib64/php/5.5
+sudo mkdir /usr/lib64/php/5.5/modules
+
+sudo mkdir /usr/lib64/php-zts
+sudo mkdir /usr/lib64/php-zts/5.5
+sudo mkdir /usr/lib64/php-zts/5.5/modules
+
+sudo mkdir /var/lib/php
+sudo mkdir /var/lib/php/5.5
+sudo mkdir /var/lib/php/5.5/wsdlcache
 
 php 5.5 최신 버전 다운로드
 wget https://www.php.net/distributions/php-5.5.38.tar.gz
@@ -63,32 +100,117 @@ tar -xzvf php-5.5.38.tar.gz
 cd php-5.5.38
 
 sudo make clean
-make distclean
 
 ./configure --help
-
-./configure --with-apxs2 --with-mysql --with-mysqli --with-pdo-mysql --with-bz2 --with-curl --with-gd --with-jpeg-dir=/usr --with-png-dir=/usr --with-openssl --with-zlib --with-gettext --enable-mbstring --enable-fpm --enable-pcntl --enable-opcache --enable-soap --enable-sockets --enable-zip
-
-./configure --prefix=/usr/local/php --with-config-file-path=/etc --with-apxs2=/usr/local/apache/bin/apxs --with-mysql=/usr/local/mysql --with-mysqli=/usr/local/mysql/bin/mysql_config --with-curl --disable-debug --enable-safe-mode  --enable-sockets --enable-sysvsem=yes --enable-sysvshm=yes --enable-ftp --enable-magic-quotes --with-ttf --enable-gd-native-ttf --enable-inline-optimization --enable-bcmath --with-zlib --with-gd --with-gettext --with-jpeg-dir=/usr --with-png-dir=/usr/lib --with-freetype-dir=/usr --with-libxml-dir=/usr --enable-exif --enable-sigchild --enable-mbstring --with-openssl
 
 ## 추가 설정
 make distclean
 
 -------------------------------------------------
 # ZTS 모듈 사용
-./configure --enable-sigchild --with-apxs2=/usr/bin/apxs --with-config-file-path=/etc --with-config-file-scan-dir=/etc/php.d --with-kerberos --with-openssl=shared --with-zlib=shared --enable-bcmath=shared --with-bz2=shared --with-curl=shared --enable-dom=shared --enable-calendar=shared --enable-exif=shared --enable-fileinfo=shared --enable-ftp=shared --with-gd=shared --with-iconv=shared --with-jpeg-dir=/usr --with-png-dir=/usr --enable-gd-native-ttf --enable-gd-jis-conv --with-gettext=shared --with-gmp=shared --with-mhash --enable-intl=shared --with-ldap=shared --enable-mbstring=shared --with-onig --enable-json=shared --with-mcrypt=shared --with-mysql=shared --enable-pcntl --enable-pdo=shared --with-pdo-mysql=shared --enable-mysqlnd=shared --with-pdo-sqlite=shared  --enable-phar=shared --enable-posix=shared --with-mysqli=shared --with-readline --enable-shmop=shared --enable-simplexml=shared --enable-sockets=shared --with-sqlite3=shared --with-snmp --enable-opcache --enable-soap=shared --enable-sysvmsg=shared --enable-sysvsem=shared --enable-sysvshm=shared --enable-tokenizer=shared --enable-wddx=shared --with-xsl=shared --enable-zip=shared --enable-zend-signals --with-freetype-dir --with-t1lib --with-xpm-dir --enable-xml=shared --with-xmlrpc=shared --enable-xmlreader=shared --enable-xmlwriter=shared --with-libdir=lib64 --enable-fpm --with-tsrm-pthreads --enable-maintainer-zts --prefix=/usr/local/php-zts
+./configure --enable-sigchild --with-apxs2=/usr/bin/apxs --with-config-file-path=/etc --with-config-file-scan-dir=/etc/php-zts-5.5.d --with-kerberos --with-openssl=shared --with-zlib=shared --enable-bcmath=shared --with-bz2=shared --with-curl=shared --enable-dom=shared --enable-calendar=shared --enable-exif=shared --enable-fileinfo=shared --enable-ftp=shared --with-gd=shared --with-iconv=shared --with-jpeg-dir=/usr --with-png-dir=/usr --enable-gd-native-ttf --enable-gd-jis-conv --with-gettext=shared --with-gmp=shared --with-mhash --enable-intl=shared --with-ldap=shared --enable-mbstring=shared --with-onig --enable-json=shared --with-mcrypt=shared --with-mysql=shared --enable-pcntl --enable-pdo=shared --with-pdo-mysql=shared --enable-mysqlnd=shared --with-pdo-sqlite=shared  --enable-phar=shared --enable-posix=shared --with-mysqli=shared --with-readline --enable-shmop=shared --enable-simplexml=shared --enable-sockets=shared --with-sqlite3=shared --with-snmp --enable-opcache --enable-soap=shared --enable-sysvmsg=shared --enable-sysvsem=shared --enable-sysvshm=shared --enable-tokenizer=shared --enable-wddx=shared --with-xsl=shared --enable-zip=shared --enable-zend-signals --with-freetype-dir --with-t1lib --with-xpm-dir --enable-xml=shared --with-xmlrpc=shared --enable-xmlreader=shared --enable-xmlwriter=shared --with-libdir=lib64 --enable-fpm --with-tsrm-pthreads --enable-maintainer-zts --prefix=/usr/local/php-zts
 
 make && sudo make install
+
+sudo systemctl restart httpd
 
 -rwxr-xr-x 1 root root 31717864 Nov 30 09:04 libphp5.so
 
 sudo mv /usr/lib64/httpd/modules/libphp5.so /usr/lib64/httpd/modules/libphp-zts-5.5.so
 
+sudo ln -s /usr/lib64/httpd/modules/libphp-zts-5.5.so /etc/alternatives/libphp-zts.so
+
+sudo ln -s /etc/alternatives/libphp-zts.so /usr/lib64/httpd/modules/libphp-zts.so
+
+sudo cp -pr /usr/local/php-zts/lib/php/extensions/no-debug-zts-20121212/. /usr/lib64/php-zts/5.5/modules/.
+
+sudo cp -pr /usr/local/php-zts/bin/* /usr/local/bin/.
+
+php -v
+
+php -i
+
+php --ini
+
+-------------------------------------------------------
+
+phpredis 설치
+
+unzip phpredis-2.2.8.zip
+
+cd phpredis-2.2.8
+
+sudo find / -name phpize
+
+phpize
+
+./configure
+
+make && sudo make install
+
+ls -la  /usr/local/php-zts/lib/php/extensions/no-debug-zts-20121212/
+
+---------------------------------------------
+# php-memcached 설치
+
+https://github.com/php-memcached-dev/php-memcached/tree/2.2.0
+
+unzip php-memcached-2.2.0.zip
+
+cd php-memcached-2.2.0
+phpize
+./configure
+make && sudo make install
+
+ls -la  /usr/local/php-zts/lib/php/extensions/no-debug-zts-20121212/
+
+memcached.so 확인
+
+
+---------------------------------------------
+# igbinary 설치
+
+cd ..
+
+https://github.com/igbinary/igbinary/tree/2.0.8
+
+unzip igbinary-2.0.8.zip
+
+cd igbinary-2.0.8
+
+phpize
+
+./configure
+
+make && sudo make install
+
+ls -la  /usr/local/php-zts/lib/php/extensions/no-debug-zts-20121212/
+
+igbinary.so 확인
+
+sudo cp -pr /usr/local/php-zts/lib/php/extensions/no-debug-zts-20121212/. /usr/lib64/php-zts/5.5/modules/.
+
+ls -la /usr/lib64/php-zts/5.5/modules/
+
+---------------------------------------
+ini 파일 복사
+
+apachectl -V
+
+sudo cp -pr php.d/* /etc/php-zts-5.5.d/
+
+sudo chown -R root:root /etc/php-zts-5.5.d
+
+sudo cp -pr php.ini /etc/php.ini
+
+sudo systemctl restart httpd
+
 -------------------------------------------------------
 # 비ZTS 모듈 사용
+sudo make clean
 make distclean
 
-./configure --enable-sigchild --with-apxs2=/usr/bin/apxs --with-config-file-path=/etc --with-config-file-scan-dir=/etc/php.d --with-kerberos --with-openssl=shared --with-zlib=shared --enable-bcmath=shared --with-bz2=shared --with-curl=shared --enable-dom=shared --enable-calendar=shared --enable-exif=shared --enable-fileinfo=shared --enable-ftp=shared --with-gd=shared --with-iconv=shared --with-jpeg-dir=/usr --with-png-dir=/usr --enable-gd-native-ttf --enable-gd-jis-conv --with-gettext=shared --with-gmp=shared --with-mhash --enable-intl=shared --with-ldap=shared --enable-mbstring=shared --with-onig --enable-json=shared --with-mcrypt=shared --with-mysql=shared --enable-pcntl --enable-pdo=shared --with-pdo-mysql=shared --enable-mysqlnd=shared --with-pdo-sqlite=shared  --enable-phar=shared --enable-posix=shared --with-mysqli=shared --with-readline --enable-shmop=shared --enable-simplexml=shared --enable-sockets=shared --with-sqlite3=shared --with-snmp --enable-opcache --enable-soap=shared --enable-sysvmsg=shared --enable-sysvsem=shared --enable-sysvshm=shared --enable-tokenizer=shared --enable-wddx=shared --with-xsl=shared --enable-zip=shared --enable-zend-signals --with-freetype-dir --with-t1lib --with-xpm-dir --enable-xml=shared --with-xmlrpc=shared --enable-xmlreader=shared --enable-xmlwriter=shared --with-libdir=lib64 --enable-fpm --with-tsrm-pthreads --prefix=/usr/local/php
+./configure --enable-sigchild --with-apxs2=/usr/bin/apxs --with-config-file-path=/etc --with-config-file-scan-dir=/etc/php-5.5.d --with-kerberos --with-openssl=shared --with-zlib=shared --enable-bcmath=shared --with-bz2=shared --with-curl=shared --enable-dom=shared --enable-calendar=shared --enable-exif=shared --enable-fileinfo=shared --enable-ftp=shared --with-gd=shared --with-iconv=shared --with-jpeg-dir=/usr --with-png-dir=/usr --enable-gd-native-ttf --enable-gd-jis-conv --with-gettext=shared --with-gmp=shared --with-mhash --enable-intl=shared --with-ldap=shared --enable-mbstring=shared --with-onig --enable-json=shared --with-mcrypt=shared --with-mysql=shared --enable-pcntl --enable-pdo=shared --with-pdo-mysql=shared --enable-mysqlnd=shared --with-pdo-sqlite=shared  --enable-phar=shared --enable-posix=shared --with-mysqli=shared --with-readline --enable-shmop=shared --enable-simplexml=shared --enable-sockets=shared --with-sqlite3=shared --with-snmp --enable-opcache --enable-soap=shared --enable-sysvmsg=shared --enable-sysvsem=shared --enable-sysvshm=shared --enable-tokenizer=shared --enable-wddx=shared --with-xsl=shared --enable-zip=shared --enable-zend-signals --with-freetype-dir --with-t1lib --with-xpm-dir --enable-xml=shared --with-xmlrpc=shared --enable-xmlreader=shared --enable-xmlwriter=shared --with-libdir=lib64 --enable-fpm --with-tsrm-pthreads --prefix=/usr/local/php
 
 make && sudo make install
 
@@ -96,9 +218,116 @@ make && sudo make install
 
 sudo mv /usr/lib64/httpd/modules/libphp5.so /usr/lib64/httpd/modules/libphp-5.5.so
 
+sudo ln -s /usr/lib64/httpd/modules/libphp-5.5.so /etc/alternatives/libphp.so
+
+sudo ln -s /etc/alternatives/libphp.so /usr/lib64/httpd/modules/libphp.so
+
+# sudo cp -pr /usr/local/php/lib/php/extensions/no-debug-non-zts-20121212/. /usr/lib64/php/5.5/modules/.
+
+sudo cp -pr /usr/local/php/bin/* /usr/local/bin/.
+
+php -v
+
+php -i
+
+php --ini
+
+-------------------------------------------------------
+
+phpredis 설치
+
+unzip phpredis-2.2.8.zip
+
+cd phpredis-2.2.8
+
+sudo find / -name phpize
+
+phpize
+
+./configure
+
+make && sudo make install
+
+ls -la  /usr/local/php/lib/php/extensions/no-debug-non-zts-20121212/
+
+cd ..
+
+---------------------------------------------
+# php-memcached 설치
+
+https://github.com/php-memcached-dev/php-memcached/tree/2.2.0
+
+unzip php-memcached-2.2.0.zip
+
+cd php-memcached-2.2.0
+phpize
+./configure
+make && sudo make install
+
+ls -la  /usr/local/php/lib/php/extensions/no-debug-non-zts-20121212/
+
+memcached.so 확인
+
+
+---------------------------------------------
+# igbinary 설치
+
+cd ..
+
+https://github.com/igbinary/igbinary/tree/2.0.8
+
+unzip igbinary-2.0.8.zip
+
+cd igbinary-2.0.8
+
+phpize
+./configure
+make && sudo make install
+
+ls -la  /usr/local/php/lib/php/extensions/no-debug-non-zts-20121212/
+
+igbinary.so 확인
+
+sudo cp -pr /usr/local/php/lib/php/extensions/no-debug-non-zts-20121212/. /usr/lib64/php/5.5/modules/.
+
+ls -la /usr/lib64/php/5.5/modules/
+
+---------------------------------------
+ini 파일 복사
+
+apachectl -V
+
+sudo vi /etc/httpd/conf.modules.d/00-mpm.conf
+
+sudo cp -pr php.d/* /etc/php-5.5.d/
+
+sudo chown -R root:root /etc/php-5.5.d
+
+sudo cp -pr php.ini /etc/php.ini
+
+sudo systemctl restart httpd
+
+httpd -D DUMP_MODULES
+
+-------------------------------------------------------
+
+extension_dir = /usr/lib64/php/5.5/modules
+
+sudo mv /etc/php.ini /etc/php-5.5.ini
+
+sudo ln -s /etc/php-5.5.ini /etc/alternatives/php.ini
+
+sudo ln -s /etc/php-5.5.d /etc/alternatives/php.d
+
+sudo ln -s /etc/php-zts-5.5.d /etc/alternatives/php-zts.d
+
+sudo ln -s /etc/alternatives/php.ini /etc/php.ini
+
 sudo systemctl restart httpd
 
 ------------------------------------------------------------
+
+find . -name '*' | xargs grep -r --color=auto -n 2>dev/null 'php.d'
 
 ./configure --with-config-file-scan-dir=/etc/php-zts-5.5.d
 
@@ -881,4 +1110,57 @@ sudo systemctl restart php7.x-fpm
 이 설정은 Apache 서버와 PHP-FPM 사이의 연결을 설정하는 기본적인 예시입니다. 실제 환경에 맞게 조정이 필요할 수 있습니다.
 보안 및 성능 최적화를 위해 추가적인 설정이 필요할 수 있습니다.
 PHP-FPM 설정(pool 설정 등)은 웹 애플리케이션의 요구사항에 따라 다를 수 있습니다.
+
+-----------------------------------------------------------------
+
+sudo mkdir /usr/local/etc/php-fpm.d
+
+sudo useradd php-fpm
+
+sudo mkdir /var/run/php-fpm /var/log/php-fpm
+
+sudo chown php-fpm:php-fpm /var/run/php-fpm /var/log/php-fpm
+
+sudo cp /home/ec2-user/php-fpm.conf /usr/local/etc/php-fpm.conf
+
+ sudo cp /home/ec2-user/php-5.5.38/sapi/fpm/php-fpm /usr/local/bin/
+
+
+php.ini
+-----------
+cgi.fix_pathinfo=0
+
+expose_php = Off
+--------------
+
+php-fpm.conf
+
+--------------
+
+(パスの設定を変更)
+pid = /var/run/php-fpm/php-fpm.pid
+
+(パスの設定を変更)
+error_log = /var/log/php-fpm/php-fpm.log
+
+(パスの設定を変更)
+include=/usr/local/etc/php-fpm.d/*.conf
+--------------
+
+cd /home/ec2-user/php-5.5.38/
+
+sudo cp ./sapi/fpm/php-fpm.service /usr/lib/systemd/system/
+
+sudo vi /usr/lib/systemd/system/php-fpm.service
+--------------
+[Service]
+Type=notify
+User=php-fpm
+PIDFile=/var/run/php-fpm/php-fpm.pid
+ExecStart=/usr/local/sbin/php-fpm --nodaemonize --fpm-config /usr/local/etc/php-fpm.conf
+ExecReload=/bin/kill -USR2 $MAINPID
+--------------
+
+
+
 

@@ -291,3 +291,32 @@ unconfined_u:object_r:user_home_t:s0 startup.sh
 unconfined_u:object_r:user_home_t:s0 shutdown.sh
 [root@localhost bin]# chcon -t httpd_sys_script_exec_t startup.sh
 [root@localhost bin]# chcon -t httpd_sys_script_exec_t shutdown.sh
+
+chcon -t user_home_t startup.sh
+chcon -t user_home_t shutdown.sh
+
+
+------------------------------------------------------------------------
+# SELinux 컨텍스트 정책 변경
+
+ausearch -c 'startup.sh' --raw | audit2allow -M my-startupsh
+    Nothing to do
+
+
+semodule -X 300 -i my-startupsh.pp
+
+
+tail /var/log/audit/audit.log
+
+grep 1702447867.140:297 /var/log/audit/audit.log | audit2allow -M my-startupsh
+
+생성 확인
+my-startupsh.pp
+my-startupsh.te
+
+semodule -i my-startupsh.pp
+
+/sbin/restorecon -v /opt/apache-tomcat-9.0.83/bin/startup.sh
+
+systemctl start tomcat.service
+

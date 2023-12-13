@@ -285,3 +285,9 @@ https://localhost:8443/
 
 ------------------------------------------------------------------------
 
+[root@localhost bin]# ls -Z startup.sh
+unconfined_u:object_r:user_home_t:s0 startup.sh
+[root@localhost bin]# ls -Z shutdown.sh
+unconfined_u:object_r:user_home_t:s0 shutdown.sh
+[root@localhost bin]# chcon -t httpd_sys_script_exec_t startup.sh
+[root@localhost bin]# chcon -t httpd_sys_script_exec_t shutdown.sh

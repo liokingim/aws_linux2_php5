@@ -122,11 +122,12 @@ yum install net-tools-2.0-0.51.20160912git.el8.x86_64
 
 # ファイアウォールを構成 외부 접속 허용
 sudo firewall-cmd --permanent --add-port=8080/tcp
+sudo firewall-cmd --permanent --add-port=80/tcp
 sudo firewall-cmd --permanent --add-port=8443/tcp
 sudo firewall-cmd --reload
 
 
-
+httpd -D DUMP_MODULES
 
 
 https://ja.linux-console.net/?p=21623#google_vignette
@@ -319,4 +320,15 @@ semodule -i my-startupsh.pp
 /sbin/restorecon -v /opt/apache-tomcat-9.0.83/bin/startup.sh
 
 systemctl start tomcat.service
+
+
+# SELinux 파일 컨텍스트를 설정 httpd
+
+sudo semanage fcontext -a -t httpd_log_t '/data/httpd/log/error_log'
+sudo restorecon -v '/data/httpd/log/error_log'
+sudo semanage fcontext -a -t httpd_log_t '/data/httpd/log/access_log'
+sudo restorecon -v '/data/httpd/log/access_log'
+systemctl restart httpd
+
+sudo setsebool -P httpd_can_network_connect 1
 

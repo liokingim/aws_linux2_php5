@@ -276,6 +276,7 @@ sudo vi /opt/apache-tomcat-9.0.83/conf/server.xml
 
 
 /opt/apache-tomcat-9.0.83/bin/shutdown.sh
+
 /opt/apache-tomcat-9.0.83/bin/startup.sh
 
 ps aux |grep tomcat
@@ -287,10 +288,15 @@ https://localhost:8443/
 ------------------------------------------------------------------------
 
 [root@localhost bin]# ls -Z startup.sh
+
 unconfined_u:object_r:user_home_t:s0 startup.sh
+
 [root@localhost bin]# ls -Z shutdown.sh
+
 unconfined_u:object_r:user_home_t:s0 shutdown.sh
+
 [root@localhost bin]# chcon -t httpd_sys_script_exec_t startup.sh
+
 [root@localhost bin]# chcon -t httpd_sys_script_exec_t shutdown.sh
 
 chcon -t user_home_t startup.sh
@@ -325,9 +331,13 @@ systemctl start tomcat.service
 # SELinux 파일 컨텍스트를 설정 httpd
 
 sudo semanage fcontext -a -t httpd_log_t '/data/httpd/log/error_log'
+
 sudo restorecon -v '/data/httpd/log/error_log'
+
 sudo semanage fcontext -a -t httpd_log_t '/data/httpd/log/access_log'
+
 sudo restorecon -v '/data/httpd/log/access_log'
+
 systemctl restart httpd
 
 sudo setsebool -P httpd_can_network_connect 1
@@ -380,8 +390,11 @@ wget http://mirror.centos.org/altarch/7/os/aarch64/Packages/ipa-mincho-fonts-003
 wget http://mirror.centos.org/centos/7/os/x86_64/Packages/ipa-pmincho-fonts-003.03-5.el7.noarch.rpm
 
 rpm -Uvh ipa-gothic-fonts-003.03-15.el8.noarch.rpm
+
 rpm -Uvh ipa-mincho-fonts-003.03-5.el7.noarch.rpm
+
 rpm -Uvh ipa-pgothic-fonts-003.03-14.el8.noarch.rpm
+
 rpm -Uvh ipa-pmincho-fonts-003.03-5.el7.noarch.rpm
 
 # apache error
@@ -397,3 +410,8 @@ setenforce 0
 getenforce
 
 yum install mod_ssl.x86_64
+
+# mysql
+
+wget https://dev.mysql.com/get/Downloads/MySQL-8.2/mysql-8.2.0-1.el8.x86_64.rpm-bundle.tar
+

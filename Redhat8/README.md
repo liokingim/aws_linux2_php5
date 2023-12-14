@@ -332,3 +332,11 @@ systemctl restart httpd
 
 sudo setsebool -P httpd_can_network_connect 1
 
+# Tomcat setenv.sh
+
+/opt/tomcat/bin/setenv.sh
+
+sudo vi setenv.sh
+
+CATALINA_OPTS="-server -Xmx1024m -Xms1024m -Xss512k"
+export CATALINA_OPTS

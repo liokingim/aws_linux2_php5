@@ -363,6 +363,14 @@ yum remove libreoffice.x86_64
 
 wget https://downloadarchive.documentfoundation.org/libreoffice/old/6.4.7.2/rpm/x86_64/LibreOffice_6.4.7.2_Linux_x86-64_rpm.tar.gz
 
+tar zxvf LibreOffice_6.4.7.2_Linux_x86-64_rpm.tar.gz
+
+cd LibreOffice_6.4.7.2_Linux_x86-64_rpm
+
+cd RPMS
+
+yum localinstall *.rpm
+
 wget https://pkgs.dyn.su/el8/base/x86_64/ipa-gothic-fonts-003.03-15.el8.noarch.rpm
 
 wget https://pkgs.dyn.su/el8/base/x86_64/ipa-pgothic-fonts-003.03-14.el8.noarch.rpm
@@ -376,8 +384,16 @@ rpm -Uvh ipa-mincho-fonts-003.03-5.el7.noarch.rpm
 rpm -Uvh ipa-pgothic-fonts-003.03-14.el8.noarch.rpm
 rpm -Uvh ipa-pmincho-fonts-003.03-5.el7.noarch.rpm
 
-# LibreOffice 의존 라이브러리
+# apache error
 
+setsebool -P httpd_read_user_content 1
 
+systemctl restart httpd
 
+cd /data/httpd/log/
 
+setenforce 0
+
+getenforce
+
+yum install mod_ssl.x86_64

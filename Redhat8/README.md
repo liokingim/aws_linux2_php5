@@ -340,3 +340,44 @@ sudo vi setenv.sh
 
 CATALINA_OPTS="-server -Xmx1024m -Xms1024m -Xss512k"
 export CATALINA_OPTS
+
+# LibreOffice
+wget https://ftp-srv2.kddilabs.jp/office/tdf/libreoffice/stable/7.6.4/rpm/x86_64/LibreOffice_7.6.4_Linux_x86-64_rpm.tar.gz
+
+tar zxvf LibreOffice_7.6.4_Linux_x86-64_rpm.tar.gz
+
+cd RPMS
+
+yum localinstall *.rpm
+
+rpm -qa |grep libreoffice
+
+rpm -e libreoffice
+
+rpm -e $(rpm -qa | grep -i -E "^libreoffice|libobasis")
+
+## 6.4.7.2
+yum install libreoffice.x86_64
+
+yum remove libreoffice.x86_64
+
+wget https://downloadarchive.documentfoundation.org/libreoffice/old/6.4.7.2/rpm/x86_64/LibreOffice_6.4.7.2_Linux_x86-64_rpm.tar.gz
+
+wget https://pkgs.dyn.su/el8/base/x86_64/ipa-gothic-fonts-003.03-15.el8.noarch.rpm
+
+wget https://pkgs.dyn.su/el8/base/x86_64/ipa-pgothic-fonts-003.03-14.el8.noarch.rpm
+
+wget http://mirror.centos.org/altarch/7/os/aarch64/Packages/ipa-mincho-fonts-003.03-5.el7.noarch.rpm
+
+wget http://mirror.centos.org/centos/7/os/x86_64/Packages/ipa-pmincho-fonts-003.03-5.el7.noarch.rpm
+
+rpm -Uvh ipa-gothic-fonts-003.03-15.el8.noarch.rpm
+rpm -Uvh ipa-mincho-fonts-003.03-5.el7.noarch.rpm
+rpm -Uvh ipa-pgothic-fonts-003.03-14.el8.noarch.rpm
+rpm -Uvh ipa-pmincho-fonts-003.03-5.el7.noarch.rpm
+
+# LibreOffice 의존 라이브러리
+
+
+
+

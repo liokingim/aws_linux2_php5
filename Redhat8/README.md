@@ -307,6 +307,7 @@ unconfined_u:object_r:user_home_t:s0 shutdown.sh
 [root@localhost bin]# chcon -t httpd_sys_script_exec_t shutdown.sh
 
 chcon -t user_home_t startup.sh
+
 chcon -t user_home_t shutdown.sh
 
 
@@ -348,6 +349,9 @@ sudo restorecon -v '/data/httpd/log/access_log'
 systemctl restart httpd
 
 sudo setsebool -P httpd_can_network_connect 1
+
+sudo chcon -t httpd_sys_rw_content_t /var/log/myapp
+
 
 # Tomcat setenv.sh
 
@@ -465,5 +469,6 @@ make && make install
 $CATALINA_HOME/bin/setenv.sh
 
 LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CATALINA_HOME/lib
+
 export LD_LIBRARY_PATH
 

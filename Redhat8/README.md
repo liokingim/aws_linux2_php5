@@ -439,11 +439,26 @@ sudo systemctl restart tomcat
 
 ------------------------------------
 
+yum install -y apr-devel openssl-devel make gcc
+
+sudo dnf install redhat-rpm-config
+
+sudo dnf install java-11-openjdk-devel
+
+sudo dnf install java-17-openjdk-devel
+
 curl -L https://dlcdn.apache.org/tomcat/tomcat-connectors/native/2.0.6/source/tomcat-native-2.0.6-src.tar.gz -o tomcat-native-2.0.6-src.tar.gz
 
 curl -L https://dlcdn.apache.org/tomcat/tomcat-connectors/native/1.2.39/source/tomcat-native-1.2.39-src.tar.gz -o tomcat-native-1.2.39-src.tar.gz
 
+
+tar zxvf tomcat-native-1.2.39-src.tar.gz
+
+cd tomcat-native-1.2.39-src/native
+
 ./configure --with-apr=$HOME/APR --with-java-home=$JAVA_HOME --with-ssl=$HOME/OPENSSL --prefix=$CATALINA_HOME
+
+./configure --with-apr=/usr/bin/apr-1-config --with-java-home=/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-2.el8.x86_64 --with-ssl=$HOME/OPENSSL --prefix=$CATALINA_HOME
 
 make && make install
 

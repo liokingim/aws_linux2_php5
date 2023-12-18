@@ -424,13 +424,27 @@ wget https://dev.mysql.com/get/Downloads/MySQL-8.2/mysql-8.2.0-1.el8.x86_64.rpm-
 
 # tomcat native
 
-sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+sudo dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
 
 
-sudo dnf install tomcat-native
+sudo dnf install -y tomcat-native
 
 Tomcat의 setenv.sh 파일에 다음과 같은 내용을 추가
+
 export LD_LIBRARY_PATH='$LD_LIBRARY_PATH:/usr/lib64'
 
 
 sudo systemctl restart tomcat
+
+
+------------------------------------
+
+wget ttps://dlcdn.apache.org/tomcat/tomcat-connectors/native/2.0.6/source/tomcat-native-2.0.6-src.tar.gz
+
+./configure --with-apr=$HOME/APR \
+            --with-java-home=$JAVA_HOME \
+            --with-ssl=$HOME/OPENSSL \
+            --prefix=$CATALINA_HOME
+
+make && make install
+

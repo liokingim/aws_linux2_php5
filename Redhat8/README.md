@@ -122,8 +122,15 @@ yum install net-tools-2.0-0.51.20160912git.el8.x86_64
 
 # ファイアウォールを構成 외부 접속 허용
 sudo firewall-cmd --permanent --add-port=8080/tcp
+
 sudo firewall-cmd --permanent --add-port=80/tcp
+
 sudo firewall-cmd --permanent --add-port=8443/tcp
+
+sudo firewall-cmd --permanent --add-port=25/tcp
+
+sudo firewall-cmd --permanent --add-port=143/tcp
+
 sudo firewall-cmd --reload
 
 
@@ -415,3 +422,15 @@ yum install mod_ssl.x86_64
 
 wget https://dev.mysql.com/get/Downloads/MySQL-8.2/mysql-8.2.0-1.el8.x86_64.rpm-bundle.tar
 
+# tomcat native
+
+sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+
+
+sudo dnf install tomcat-native
+
+Tomcat의 setenv.sh 파일에 다음과 같은 내용을 추가
+export LD_LIBRARY_PATH='$LD_LIBRARY_PATH:/usr/lib64'
+
+
+sudo systemctl restart tomcat

@@ -448,3 +448,8 @@ wget ttps://dlcdn.apache.org/tomcat/tomcat-connectors/native/2.0.6/source/tomcat
 
 make && make install
 
+$CATALINA_HOME/bin/setenv.sh
+
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CATALINA_HOME/lib
+export LD_LIBRARY_PATH
+

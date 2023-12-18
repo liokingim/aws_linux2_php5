@@ -441,6 +441,8 @@ sudo systemctl restart tomcat
 
 curl -L https://dlcdn.apache.org/tomcat/tomcat-connectors/native/2.0.6/source/tomcat-native-2.0.6-src.tar.gz -o tomcat-native-2.0.6-src.tar.gz
 
+curl -L https://dlcdn.apache.org/tomcat/tomcat-connectors/native/1.2.39/source/tomcat-native-1.2.39-src.tar.gz -o tomcat-native-1.2.39-src.tar.gz
+
 ./configure --with-apr=$HOME/APR --with-java-home=$JAVA_HOME --with-ssl=$HOME/OPENSSL --prefix=$CATALINA_HOME
 
 make && make install

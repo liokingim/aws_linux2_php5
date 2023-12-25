@@ -11,6 +11,10 @@ firewall-cmd --permanent --add-service=http
 firewall-cmd --permanent --add-service=https
 firewall-cmd --reload
 
+
+sudo make clean
+make distclean
+
 ## apr install
 tar -zxvf apr-1.7.4.tar.gz
 cd apr-1.7.4
@@ -40,13 +44,26 @@ cd openssl-1.1.1w
 make & sudo make install
 cd ..
 
+## pcre 설치
+tar zxvf pcre2-10.42.tar.gz
+cd pcre2-10.42
+./configure --prefix=/usr/local/pcre2
+make
+sudo make install
+
+tar -zxvf pcre-8.45.tar.gz
+cd pcre-8.45
+./configure --prefix=/usr/local/pcre
+make
+sudo make install
+
 ## httpd install
 
 tar zxvf httpd-2.4.58.tar.gz
 
 cd httpd-2.4.58
 
-./configure --prefix=/opt/apache --exec-prefix=/usr --bindir=/usr/bin --sbindir=/usr/sbin --mandir=/usr/share/man --libdir=/usr/lib64 --sysconfdir=//opt/apache/conf --includedir=/usr/include --datadir=/var/www --localstatedir=/var --with-mpm=event --enable-http2 --with-nghttp2=/usr/local --with-ssl=/usr/local/ssl
+./configure --prefix=/opt/apache --exec-prefix=/usr --bindir=/usr/bin --sbindir=/usr/sbin --mandir=/usr/share/man --libdir=/usr/lib64 --sysconfdir=//opt/apache/conf --includedir=/usr/include --datadir=/var/www --localstatedir=/var --with-mpm=prefork --enable-http2 --with-nghttp2=/usr/local --with-ssl=/usr/local/ssl --with-pcre=/usr/local/pcre
 
 make & sudo make install
 
@@ -119,6 +136,46 @@ cat httpd-ssl.conf |grep SSLSessionCache
     ErrorLog "/var/logs/localhost-test.com-error_log"
     CustomLog "/var/logs/localhost-test.com-access_log" common
 </VirtualHost>
+
+# Lynx 설치
+
+yum install -y lynx.x86_64
+
+# apachectl status 상태확인
+httpd.conf
+
+<Location "/server-status">
+    SetHandler server-status
+    Require host localhost
+</Location>
+
+apachectl status
+
+# Apache용 systemd 서비스 파일 생성
+
+vi /etc/systemd/system/httpd.service
+
+[Unit]
+Description=The Apache HTTP Server
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/usr/sbin/apachectl start
+ExecReload=/usr/sbin/apachectl graceful
+ExecStop=/usr/sbin/apachectl stop
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
+
+#
+
+systemctl daemon-reload
+
+sudo systemctl enable httpd
+sudo systemctl start httpd
+sudo systemctl status httpd
 
 
 
@@ -412,4 +469,30 @@ Included configuration files:
     (356) /etc/httpd/conf.d/userdir.conf
     (356) /etc/httpd/conf.d/welcome.conf
 AH00558: httpd: Could not reliably determine the server's fully qualified domain name, using localhost.localdomain. Set the 'ServerName' directive globally to suppress this message
+
+
+
+php 5.5 최신 버전 다운로드
+wget https://www.php.net/distributions/php-5.5.38.tar.gz
+
+php 압축해제
+tar -xzvf php-5.5.38.tar.gz
+
+cd php-5.5.38
+
+./configure --help
+
+## 추가 설정
+sudo make clean
+make distclean
+
+-------------------------------------------------
+# ZTS 모듈 사용
+./configure --enable-sigchild --with-apxs2=/usr/bin/apxs --with-config-file-path=/opt/apache/conf --with-config-file-scan-dir=/etc/php-zts-5.5.d --with-kerberos --with-openssl=shared --with-zlib=shared --enable-bcmath=shared --with-bz2=shared --with-curl=shared --enable-ctype=shared --enable-dom=shared --enable-calendar=shared --enable-exif=shared --enable-fileinfo=shared --enable-ftp=shared --with-gd=shared --with-iconv=shared --with-jpeg-dir=/usr --with-png-dir=/usr --enable-gd-native-ttf --enable-gd-jis-conv --with-gettext=shared --with-gmp=shared --with-mhash --enable-intl=shared --with-ldap=shared --enable-mbstring=shared --with-onig --enable-json=shared --with-mcrypt=shared --with-mysql=shared --enable-pcntl --enable-pdo=shared --with-pdo-mysql=shared --enable-mysqlnd=shared --with-pdo-sqlite=shared  --enable-phar=shared --enable-posix=shared --with-mysqli=shared --with-readline --enable-shmop=shared --enable-simplexml=shared --enable-sockets=shared --with-sqlite3=shared --with-snmp --enable-opcache --enable-soap=shared --enable-sysvmsg=shared --enable-sysvsem=shared --enable-sysvshm=shared --enable-tokenizer=shared --enable-wddx=shared --with-xsl=shared --enable-zip=shared --enable-zend-signals --with-freetype-dir --with-t1lib --with-xpm-dir --enable-xml=shared --with-xmlrpc=shared --enable-xmlreader=shared --enable-xmlwriter=shared --with-libdir=lib64 --enable-fpm --with-tsrm-pthreads --enable-maintainer-zts --prefix=/usr/local/php-zts
+
+make && sudo make install
+
+
+https://louet.tistory.com/124
+
 

@@ -19,21 +19,21 @@ make distclean
 tar -zxvf apr-1.7.4.tar.gz
 cd apr-1.7.4
 ./configure
-make & sudo make install
+make && sudo make install
 cd ..
 
 ## apr-util install
 tar -zxvf apr-util-1.6.3.tar.gz
 cd apr-util-1.6.3
 ./configure --with-apr=/usr/local/apr
-make & sudo make install
+make && sudo make install
 cd ..
 
 ## nghttp2 install
 tar -zxvf nghttp2-1.58.0.tar.gz
 cd nghttp2-1.58.0
 ./configure
-make & sudo make install
+make && sudo make install
 cd ..
 
 
@@ -41,21 +41,23 @@ cd ..
 tar -zxvf openssl-1.1.1w.tar.gz
 cd openssl-1.1.1w
 ./config shared zlib-dynamic --prefix=/usr/local/ssl
-make & sudo make install
+make && sudo make install
 cd ..
 
 ## pcre 설치
 tar zxvf pcre2-10.42.tar.gz
 cd pcre2-10.42
 ./configure --prefix=/usr/local/pcre2
-make
-sudo make install
+make && sudo make install
 
 tar -zxvf pcre-8.45.tar.gz
 cd pcre-8.45
 ./configure --prefix=/usr/local/pcre
-make
-sudo make install
+make && sudo make install
+
+# Lynx 설치
+
+yum install -y lynx.x86_64
 
 ## httpd install
 
@@ -65,7 +67,8 @@ cd httpd-2.4.58
 
 ./configure --prefix=/opt/apache --exec-prefix=/usr --bindir=/usr/bin --sbindir=/usr/sbin --mandir=/usr/share/man --libdir=/usr/lib64 --sysconfdir=//opt/apache/conf --includedir=/usr/include --datadir=/var/www --localstatedir=/var --with-mpm=prefork --enable-http2 --with-nghttp2=/usr/local --with-ssl=/usr/local/ssl --with-pcre=/usr/local/pcre
 
-make & sudo make install
+make
+sudo make install
 
 cp -pr /tmp/httpd-2.4.58/modules/http2/.libs/mod_http2.so /usr/modules/mod_http2.so
 
@@ -86,6 +89,10 @@ sudo apachectl restart
 
 
 # 자체 서명된 인증서 생성
+cd /opt/apache
+mkdir ssl
+cd /opt/apache/ssl
+
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout localhost.key -out localhost.crt
 
 sudo cp /tmp/localhost.crt /opt/apache/ssl/
@@ -137,9 +144,7 @@ cat httpd-ssl.conf |grep SSLSessionCache
     CustomLog "/var/logs/localhost-test.com-access_log" common
 </VirtualHost>
 
-# Lynx 설치
 
-yum install -y lynx.x86_64
 
 # apachectl status 상태확인
 httpd.conf
@@ -470,6 +475,15 @@ Included configuration files:
     (356) /etc/httpd/conf.d/welcome.conf
 AH00558: httpd: Could not reliably determine the server's fully qualified domain name, using localhost.localdomain. Set the 'ServerName' directive globally to suppress this message
 
+php 설치에 필요한 모듈 설치
+--------------------------------------------------
+https://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/l/libmcrypt-2.5.8-13.el7.x86_64.rpm
+
+https://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/l/libmcrypt-devel-2.5.8-13.el7.x86_64.rpm
+
+yum localinstall -y libmcrypt-2.5.8-13.el7.x86_64.rpm  libmcrypt-devel-2.5.8-13.el7.x86_64.rpm
+
+sudo yum -y install gcc-c++ libxml2-devel openssl-devel bzip2-devel libcurl-devel curl-devel libpng-devel libjpeg-devel freetype-devel t1lib-devel gmp-devel  libicu-devel openldap-devel libmcrypt-devel mysql-devel readline-devel net-snmp-devel libxslt-devel libXpm-devel libevent libevent-devel httpd-devel autoconf libmemcached libmemcached-devel
 
 
 php 5.5 최신 버전 다운로드
@@ -495,4 +509,61 @@ make && sudo make install
 
 https://louet.tistory.com/124
 
+
+-------------------------------------------------------
+
+phpredis 설치
+
+unzip phpredis-2.2.8.zip
+
+cd phpredis-2.2.8
+
+sudo find / -name phpize
+sudo find / -name php-config
+
+/usr/local/php-zts/bin/phpize
+
+./configure --with-php-config=/usr/local/php-zts/bin/php-config
+
+make && sudo make install
+
+ls -la  /usr/local/php-zts/lib/php/extensions/no-debug-zts-20121212/
+
+---------------------------------------------
+# php-memcached 설치
+
+https://github.com/php-memcached-dev/php-memcached/tree/2.2.0
+
+unzip php-memcached-2.2.0.zip
+
+cd php-memcached-2.2.0
+/usr/local/php-zts/bin/phpize
+./configure --with-php-config=/usr/local/php-zts/bin/php-config
+make && sudo make install
+
+ls -la  /usr/local/php-zts/lib/php/extensions/no-debug-zts-20121212/
+
+memcached.so 확인
+
+
+---------------------------------------------
+# igbinary 설치
+
+cd ..
+
+https://github.com/igbinary/igbinary/tree/2.0.8
+
+unzip igbinary-2.0.8.zip
+
+cd igbinary-2.0.8
+
+sudo make clean
+
+make distclean
+
+/usr/local/php-zts/bin/phpize
+./configure --with-php-config=/usr/local/php-zts/bin/php-config
+make && sudo make install
+
+ls -la  /usr/local/php-zts/lib/php/extensions/no-debug-zts-20121212/
 

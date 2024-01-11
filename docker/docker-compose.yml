@@ -1,6 +1,7 @@
 version: '3.7'
 volumes:
   mysql_data:
+    driver: local
 
 services:
   mysql:

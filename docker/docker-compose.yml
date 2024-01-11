@@ -1,11 +1,13 @@
 version: '3.7'
 volumes:
   mysql_data:
-    driver: local
 
 services:
   mysql:
     container_name: "mysql_5.7.44"
+    build:
+      context: ./config/mysql
+      dockerfile: Dockerfile
     image: mysql:5.7.44
     environment:
       MYSQL_ROOT_PASSWORD: 123456
@@ -23,7 +25,7 @@ services:
   web:
     container_name: "wordpress_php5.6"
     build:
-      context: .
+      context: ./config/php
       dockerfile: Dockerfile
     depends_on:
       - mysql

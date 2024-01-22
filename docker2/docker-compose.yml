@@ -1,0 +1,42 @@
+version: '3.7'
+volumes:
+  mysql_data:
+
+services:
+  mysql:
+    container_name: "mysql_5.7.44"
+    build:
+      context: ./config/mysql
+      dockerfile: Dockerfile
+    image: mysql:5.7.44
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: docker
+      MYSQL_USER: docker
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    restart: always
+    expose:
+      - "3306"
+
+  web:
+    container_name: "apache_php5.6"
+    build:
+      context: ./config/php
+      dockerfile: Dockerfile
+    depends_on:
+      - mysql
+    image: php:5.6.40-apache
+    volumes:
+      - ./html:/var/www/html
+    ports:
+      - "80:80"
+    environment:
+      WORDPRESS_DB_HOST: mysql:3306
+      WORDPRESS_DB_NAME: docker
+      WORDPRESS_DB_USER: docker
+      WORDPRESS_DB_PASSWORD: password
+    restart: always
